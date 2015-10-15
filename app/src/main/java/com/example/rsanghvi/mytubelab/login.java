@@ -2,10 +2,12 @@ package com.example.rsanghvi.mytubelab;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -68,6 +70,8 @@ public class login extends Activity implements
 
     String mAccountName = null;
 
+    public static String access_token = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +79,8 @@ public class login extends Activity implements
 
         // Restore from saved instance state
         // [START restore_saved_instance_state]
+
+
         if (savedInstanceState != null) {
             mIsResolving = savedInstanceState.getBoolean(KEY_IS_RESOLVING);
             mShouldResolve = savedInstanceState.getBoolean(KEY_SHOULD_RESOLVE);
@@ -85,6 +91,7 @@ public class login extends Activity implements
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.sign_out_button).setOnClickListener(this);
         findViewById(R.id.disconnect_button).setOnClickListener(this);
+        findViewById(R.id.continue_app).setOnClickListener(this);
 
         // Large sign-in
         ((SignInButton) findViewById(R.id.sign_in_button)).setSize(SignInButton.SIZE_WIDE);
@@ -110,21 +117,31 @@ public class login extends Activity implements
     private void updateUI(boolean isSignedIn) {
         if (isSignedIn) {
             Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-            Log.i("Get Token Id",currentPerson.getId());
-            String acctName=Plus.AccountApi.getAccountName(mGoogleApiClient);
+//            Log.i("Get Token Id",currentPerson.getId());
+//            String acctName=Plus.AccountApi.getAccountName(mGoogleApiClient);
             if (currentPerson != null) {
                 // Show signed-in user's name
                 String name = currentPerson.getDisplayName();
                 mStatus.setText(getString(R.string.signed_in_fmt, name));
 
-                Log.d(TAG, "acctName:" + acctName);
+              //  Log.d(TAG, "acctName:" + acctName);
 
                 // Show users' email address (which requires GET_ACCOUNTS permission)
                 if (checkAccountsPermission()) {
                     String currentAccount = Plus.AccountApi.getAccountName(mGoogleApiClient);
                     ((TextView) findViewById(R.id.email)).setText(currentAccount);
+                    new RetrieveTokenTask().execute(currentAccount);
+
                 }
-            } else {
+            }
+
+            else if(!isNetworkAvailable(this.getApplicationContext())) {
+                mStatus.setText(getString(R.string.no_internet_connectivity));
+                findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
+                findViewById(R.id.continue_app).setVisibility(View.GONE);
+            }
+
+            else {
                 // If getCurrentPerson returns null there is generally some error with the
                 // configuration of the application (invalid Client ID, Plus API not enabled, etc).
                 Log.w(TAG, getString(R.string.error_null_person));
@@ -134,7 +151,8 @@ public class login extends Activity implements
             // Set button visibility
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
-            new RetrieveTokenTask().execute(acctName);
+            findViewById(R.id.continue_app).setVisibility(View.VISIBLE);
+
         } else {
             // Show signed-out message and clear email field
             mStatus.setText(R.string.signed_out);
@@ -144,6 +162,8 @@ public class login extends Activity implements
             findViewById(R.id.sign_in_button).setEnabled(true);
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
+            findViewById(R.id.continue_app).setVisibility(View.GONE);
+
         }
     }
 
@@ -335,6 +355,9 @@ public class login extends Activity implements
             case R.id.disconnect_button:
                 onDisconnectClicked();
                 break;
+            case R.id.continue_app:
+                onContinueApp();
+                break;
         }
     }
     // [END on_click]
@@ -378,6 +401,38 @@ public class login extends Activity implements
     }
     // [END on_disconnect_clicked]
 
+    // [START on_disconnect_clicked]
+    private void onContinueApp() {
+        // Revoke all granted permissions and clear the default account.  The user will have
+        // to pass the consent screen to sign in again.
+        if (mGoogleApiClient.isConnected()) {
+            Intent intent_name = new Intent();
+            intent_name.setClass(getApplicationContext(), MainAppPage.class);
+           // intent_name.putExtra("AccessToken",access_token);
+
+            //Create the bundle
+            Bundle bundle = new Bundle();
+
+             //Add your data to bundle
+            bundle.putString("accessToken", access_token);
+
+            //Add the bundle to the intent
+            intent_name.putExtras(bundle);
+
+            //Fire that second activity
+            startActivity(intent_name);
+
+
+//            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+//            Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
+//            mGoogleApiClient.disconnect();
+        }
+
+       // showSignedOutUI();
+    }
+    // [END on_disconnect_clicked]
+
+
     private class RetrieveTokenTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -401,6 +456,14 @@ public class login extends Activity implements
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             Log.d("Token Value", "Token is: " + s);
+            access_token = s;
+
+
         }
+    }
+
+    private boolean isNetworkAvailable(final Context context) {
+        final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }
