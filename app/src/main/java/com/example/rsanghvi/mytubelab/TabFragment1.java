@@ -64,6 +64,15 @@ public class TabFragment1 extends Fragment {
                                     long id) {
                 Intent intent = new Intent(getActivity().getApplicationContext(), PlayerActivity.class);
                 intent.putExtra("VIDEO_ID", searchResults.get(pos).getId());
+
+                intent.putExtra("title", searchResults.get(pos).getTitle());
+
+                intent.putExtra("description", searchResults.get(pos).getDescription());
+
+                intent.putExtra("views", searchResults.get(pos).getViewCount().toString());
+
+                intent.putExtra("date", searchResults.get(pos).getPublishedAt());
+
                 startActivity(intent);
             }
 
@@ -99,12 +108,17 @@ public class TabFragment1 extends Fragment {
                 }
                 ImageView thumbnail = (ImageView)convertView.findViewById(R.id.video_thumbnail);
                 TextView title = (TextView)convertView.findViewById(R.id.video_title);
-                TextView description = (TextView)convertView.findViewById(R.id.video_description);
+                TextView views = (TextView)convertView.findViewById(R.id.video_views);
+                TextView publishedDate = (TextView)convertView.findViewById(R.id.video_published_date);
+                TextView description = (TextView)convertView.findViewById(R.id.description);
+
 
                 VideoItem searchResult = searchResults.get(position);
 
                 Picasso.with(getActivity().getApplicationContext()).load(searchResult.getThumbnailURL()).into(thumbnail);
                 title.setText(searchResult.getTitle());
+                views.setText(searchResult.getViewCount().toString());
+                publishedDate.setText(searchResult.getPublishedAt());
                 description.setText(searchResult.getDescription());
                 return convertView;
             }

@@ -458,6 +458,8 @@ public class login extends Activity implements
             Log.d("Token Value", "Token is: " + s);
             access_token = s;
 
+            Config.setTokenId(s);
+
 
         }
     }

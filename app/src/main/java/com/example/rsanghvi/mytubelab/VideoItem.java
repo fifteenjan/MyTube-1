@@ -1,5 +1,7 @@
 package com.example.rsanghvi.mytubelab;
 
+import java.math.BigInteger;
+
 /**
  * Created by kasatswati on 10/14/15.
  */
@@ -9,7 +11,8 @@ public class VideoItem {
     private String description;
     private String thumbnailURL;
     private String id;
-    private long viewCount;
+    private BigInteger viewCount;
+    private String publishesAt;
 
     public String getId() {
         return id;
@@ -23,9 +26,13 @@ public class VideoItem {
         return title;
     }
 
-    public String getViewCount() { return Long.toString(viewCount);}
+    public String getPublishedAt() {
+        return publishesAt;
+    }
 
-    public void setViewCount(long viewCount){this.viewCount = viewCount;}
+    public BigInteger getViewCount() { return viewCount;}
+
+    public void setViewCount(BigInteger viewCount){this.viewCount = viewCount;}
 
     public void setTitle(String title) {
         this.title = title;
@@ -37,6 +44,10 @@ public class VideoItem {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setPublishedAt(String publishesAt) {
+         this.publishesAt=publishesAt;
     }
 
     public String getThumbnailURL() {
