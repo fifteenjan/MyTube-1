@@ -30,17 +30,8 @@ public class TabFragment1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        //super.onCreateView(savedInstanceState);
         View view = inflater.inflate(R.layout.tab_fragment_1, container, false);
-
         videosFound=(ListView)view.findViewById(R.id.videos_found_fragment);
-
-        //videosFound = (ListView)getView().findViewById(R.id.videos_found_fragment);
-
-
-
-
-
         handler = new Handler() {
         };
 
@@ -52,7 +43,6 @@ public class TabFragment1 extends Fragment {
             searchOnYoutube(keyword);
 
         addClickListener();
-
         return view;
     }
 
@@ -64,15 +54,10 @@ public class TabFragment1 extends Fragment {
                                     long id) {
                 Intent intent = new Intent(getActivity().getApplicationContext(), PlayerActivity.class);
                 intent.putExtra("VIDEO_ID", searchResults.get(pos).getId());
-
                 intent.putExtra("title", searchResults.get(pos).getTitle());
-
                 intent.putExtra("description", searchResults.get(pos).getDescription());
-
                 intent.putExtra("views", searchResults.get(pos).getViewCount().toString());
-
                 intent.putExtra("date", searchResults.get(pos).getPublishedAt());
-
                 startActivity(intent);
             }
 
@@ -110,7 +95,7 @@ public class TabFragment1 extends Fragment {
                 TextView title = (TextView)convertView.findViewById(R.id.video_title);
                 TextView views = (TextView)convertView.findViewById(R.id.video_views);
                 TextView publishedDate = (TextView)convertView.findViewById(R.id.video_published_date);
-                TextView description = (TextView)convertView.findViewById(R.id.description);
+               // TextView description = (TextView)convertView.findViewById(R.id.description);
 
 
                 VideoItem searchResult = searchResults.get(position);
@@ -119,7 +104,7 @@ public class TabFragment1 extends Fragment {
                 title.setText(searchResult.getTitle());
                 views.setText(searchResult.getViewCount().toString());
                 publishedDate.setText(searchResult.getPublishedAt());
-                description.setText(searchResult.getDescription());
+               // description.setText(searchResult.getDescription());
                 return convertView;
             }
         };

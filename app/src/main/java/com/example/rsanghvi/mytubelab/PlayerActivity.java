@@ -5,6 +5,7 @@ package com.example.rsanghvi.mytubelab;
  */
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,34 +22,33 @@ public class PlayerActivity extends YouTubeBaseActivity implements YouTubePlayer
 
     private YouTubePlayerView playerView;
     private Button fav;
+
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
         setContentView(R.layout.activity_player);
 
-        playerView = (YouTubePlayerView)findViewById(R.id.player_view);
+        playerView = (YouTubePlayerView) findViewById(R.id.player_view);
         playerView.initialize(Config.getKEY(), this);
 
-         fav = (Button)findViewById(R.id.favourite);
-            fav.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    addToFavourite();
-                }
-            });
+        fav = (Button) findViewById(R.id.favourite);
+        fav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addToFavourite();
+            }
+        });
 
         TextView title = (TextView) findViewById(R.id.video_title_playeractivity);
-       TextView views = (TextView) findViewById(R.id.video_views_playeractivity1);
-        TextView publishedDate = (TextView) findViewById(R.id.video_published_date_playeractivity);
+        TextView views = (TextView) findViewById(R.id.video_views);
+        TextView publishedDate = (TextView) findViewById(R.id.video_published_date);
         TextView description = (TextView) findViewById(R.id.description_playeractivity);
 
         title.setText(getIntent().getStringExtra("title"));
         views.setText(getIntent().getStringExtra("views"));
         publishedDate.setText(getIntent().getStringExtra("date"));
         description.setText(getIntent().getStringExtra("description"));
-
-
     }
 
     @Override
@@ -60,22 +60,22 @@ public class PlayerActivity extends YouTubeBaseActivity implements YouTubePlayer
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
                                         boolean restored) {
-        if(!restored){
+        if (!restored) {
             player.cueVideo(getIntent().getStringExtra("VIDEO_ID"));
         }
     }
 
-    public void addToFavourite(){
+    public void addToFavourite() {
         String videoId = getIntent().getStringExtra("VIDEO_ID");
+        Log.i("VideoId",videoId);
         try {
-            PlaylistUpdates.insertPlaylistItem("PL0buzxaxeiZWTn43ZhAPgECp2_1AL0t-H", videoId);
+            PlaylistUpdates.insertPlaylistItem("PLe2czQmn6x18TWcKx0gyRyHbyKfkdApYM", videoId);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
 
     }
-
 
 
 }

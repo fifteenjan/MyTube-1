@@ -3,8 +3,8 @@ package com.example.rsanghvi.mytubelab;
 /**
  * Created by kasatswati on 10/15/15.
  */
-import android.util.Log;
-
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistItem;
@@ -12,29 +12,29 @@ import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.api.services.youtube.model.PlaylistSnippet;
 import com.google.api.services.youtube.model.PlaylistStatus;
 import com.google.api.services.youtube.model.ResourceId;
+import com.google.common.collect.Lists;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
 
-/**
- * Creates a new, private playlist in the authorized user's channel and add
- * a video to that new playlist.
- *
- * @author Jeremy Walker
- */
+//import com.google.android.gms.auth.api.Auth;
+//import com.google.android.gms.auth.api.credentials.Credential;
+//import com.google.api.services.samples.youtube.cmdline.Auth;
+
 public class PlaylistUpdates {
 
     /**
      * Define a global instance of a Youtube object, which will be used
      * to make YouTube Data API requests.
      */
-    private static YouTube youtube;
+    public static YouTube youtube;
 
     /**
      * Define a global variable that identifies the video that will be added
      * to the new playlist.
      */
-    private static final String VIDEO_ID = "SZj6rAYkYOg";
+    public static final String VIDEO_ID = "SZj6rAYkYOg";
 
     /**
      * Authorize the user, create a playlist, and add an item to the playlist.
@@ -43,22 +43,15 @@ public class PlaylistUpdates {
      */
     public static void main(String[] args) {
 
-      /*  // This OAuth 2.0 access scope allows for full read/write access to the
-        // authenticated user's account.
-        List<String> scopes = List.newArrayList("https://www.googleapis.com/auth/youtube");
+        List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube");
 
         try {
             // Authorize the request.
-            Credential credential = Auth.(scopes, "plauthorizeaylistupdates");
+            Credential credential = Auth.authorize(scopes, "playlistupdates");
 
             // This object is used to make YouTube Data API requests.
-            youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer() {
-                @Override
-                public void initialize(HttpRequest httpRequest) throws IOException {
-
-                }
-            })
-                    .setApplicationName("youtube-cmdline-playlistupdates-sample")
+            youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT, Auth.JSON_FACTORY, credential)
+                    .setApplicationName("MyTubeLab")
                     .build();
 
             // Create a new, private playlist in the authorized user's channel.
@@ -76,7 +69,7 @@ public class PlaylistUpdates {
         } catch (Throwable t) {
             System.err.println("Throwable: " + t.getMessage());
             t.printStackTrace();
-        }*/
+        }
     }
 
     /**
@@ -123,7 +116,27 @@ public class PlaylistUpdates {
      */
     public static String insertPlaylistItem(String playlistId, String videoId) throws IOException {
 
-        // Define a resourceId that identifies the video being added to the
+        List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube");
+
+        try {
+            // Authorize the request.
+            Credential credential = Auth.authorize(scopes, "playlistupdates");
+
+            // This object is used to make YouTube Data API requests.
+            youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT, Auth.JSON_FACTORY, credential)
+                    .setApplicationName("youtube-cmdline-playlistupdates-sample")
+                    .build();
+
+        } catch (GoogleJsonResponseException e) {
+            System.err.println("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("IOException: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Throwable t) {
+            System.err.println("Throwable: " + t.getMessage());
+            t.printStackTrace();
+        }// Define a resourceId that identifies the video being added to the
         // playlist.
         ResourceId resourceId = new ResourceId();
         resourceId.setKind("youtube#video");
@@ -138,17 +151,13 @@ public class PlaylistUpdates {
         // Create the playlistItem resource and set its snippet to the
         // object created above.
         PlaylistItem playlistItem = new PlaylistItem();
-        Log.e("playlistItem",playlistItem.toString());
-        Log.e("playListId",playlistItem.toString());
-
         playlistItem.setSnippet(playlistItemSnippet);
 
         // Call the API to add the playlist item to the specified playlist.
         // In the API call, the first argument identifies the resource parts
         // that the API response should contain, and the second argument is
         // the playlist item being inserted.
-        YouTube.PlaylistItems.Insert playlistItemsInsertCommand =
-                youtube.playlistItems().insert("snippet", playlistItem);
+        YouTube.PlaylistItems.Insert playlistItemsInsertCommand = youtube.playlistItems().insert("snippet,contentDetails", playlistItem);
         PlaylistItem returnedPlaylistItem = playlistItemsInsertCommand.execute();
 
         // Print data from the API response and return the new playlist

@@ -28,25 +28,23 @@ public class YoutubeConnector {
         youtube = new YouTube.Builder(new NetHttpTransport(),
                 new JacksonFactory(), new HttpRequestInitializer() {
             @Override
-            public void initialize(HttpRequest hr) throws IOException {}
+            public void initialize(HttpRequest hr) throws IOException {
+            }
         }).setApplicationName(context.getString(R.string.app_name)).build();
 
-        try{
-
+        try {
             query = youtube.search().list("id,snippet");
             query.setKey(Config.getKEY());
             query.setType("video");
             query.setFields("items(id/videoId,snippet/title,snippet/description,snippet/publishedAt,snippet/thumbnails/default/url)");
-
-
-        }catch(IOException e){
+        } catch (IOException e) {
             Log.d("YC", "Could not initialize: " + e);
         }
     }
 
-    public List<VideoItem> search(String keywords){
+    public List<VideoItem> search(String keywords) {
         query.setQ(keywords);
-        try{
+        try {
             SearchListResponse response = query.execute();
             List<SearchResult> results = response.getItems();
 
@@ -55,9 +53,9 @@ public class YoutubeConnector {
 
             List<Video> videoList = attachId(results);
 
-            int i =0;
+            int i = 0;
 
-            for(SearchResult result:results){
+            for (SearchResult result : results) {
 
                 Log.i("Result", result.toString());
 
@@ -66,38 +64,32 @@ public class YoutubeConnector {
                 item.setDescription(result.getSnippet().getDescription());
                 item.setThumbnailURL(result.getSnippet().getThumbnails().getDefault().getUrl());
                 item.setId(result.getId().getVideoId());
-                item.setPublishedAt(String.valueOf(result.getSnippet().getPublishedAt()).substring(0,9));
+                item.setPublishedAt(String.valueOf(result.getSnippet().getPublishedAt()).substring(0, 9));
                 item.setViewCount(videoList.get(i).getStatistics().getViewCount());
-                i=i+1;
+                i = i + 1;
                 items.add(item);
                 Log.i("published At : ", String.valueOf(result.getSnippet().getPublishedAt()).substring(0, 9));
             }
-            for(VideoItem item:items){
+            for (VideoItem item : items) {
 
-                    Log.i("item id",item.getId());
-                //String date = DateFormat.getDateTimeInstance().format(item.getPublishedAt());
-              //  Log.i("item date", date);
-             //   Log.i("item",item.);
-              //  Log.i("item", String.valueOf(item.getPublishedAt()));
-
-
+                Log.i("item id", item.getId());
             }
 
             return items;
-        } catch (IOException e){
-            Log.d("YC", "Could not search: "+e);
+        } catch (IOException e) {
+            Log.d("YC", "Could not search: " + e);
             return null;
         }
     }
 
 
-    public  List<Video> attachId(List<SearchResult> searchResultList){
+    public List<Video> attachId(List<SearchResult> searchResultList) {
 
-       Log.i("I was called: ", "I was Called");
+        Log.i("I was called: ", "I was Called");
 
         List<String> videoIds = new ArrayList<String>();
 
-        try{
+        try {
             if (searchResultList != null) {
 
                 // Merge video IDs
@@ -109,7 +101,7 @@ public class YoutubeConnector {
 
                 String videoId = stringJoiner.join(videoIds);
 
-                Log.i("VideoId",videoId);
+                Log.i("VideoId", videoId);
                 // Call the YouTube Data API's youtube.videos.list method to
                 // retrieve the resources that represent the specified videos.
                 YouTube.Videos.List listVideosRequest = youtube.videos().list("statistics").setId(videoId);
@@ -119,20 +111,20 @@ public class YoutubeConnector {
 
                 List<Video> videoList = listResponse.getItems();
 
-                if(!videoList.isEmpty())
-                return (videoList);
+                if (!videoList.isEmpty())
+                    return (videoList);
 
             }
-    } catch (GoogleJsonResponseException e) {
-        System.err.println("There was a service error: " + e.getDetails().getCode() + " : "
-                + e.getDetails().getMessage());
-    } catch (IOException e) {
-        System.err.println("There was an IO error: " + e.getCause() + " : " + e.getMessage());
-    } catch (Throwable t) {
-        t.printStackTrace();
-    }
+        } catch (GoogleJsonResponseException e) {
+            System.err.println("There was a service error: " + e.getDetails().getCode() + " : "
+                    + e.getDetails().getMessage());
+        } catch (IOException e) {
+            System.err.println("There was an IO error: " + e.getCause() + " : " + e.getMessage());
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
         return null;
-}
+    }
 
 
 }
