@@ -21,27 +21,23 @@
 
     <LinearLayout
         android:id="@+id/views_layout"
-        android:layout_marginTop="5dp"
-        android:layout_alignParentLeft="true"
+        android:layout_marginTop="1dp"
+        android:layout_alignParentRight="true"
         android:layout_below="@id/video_title_playeractivity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView android:id="@+id/video_views"
+        <TextView android:id="@+id/video_views_playeractivity1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
+            android:textSize="25sp"
+            android:layout_marginRight="10dp"
             android:textColor="@color/title"
-            android:layout_marginLeft="10dp"/>
+            android:text="ndncfnvndfj"
+            />
 
-        <TextView android:id="@+id/views_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:paddingLeft="5dp"
-            android:textColor="@color/title"
-            android:text="@string/Views" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -50,71 +46,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="5dp">
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="8dp">
 
-        <TextView android:id="@+id/video_published_date"
+        <TextView android:id="@+id/video_published_date_playeractivity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:layout_marginLeft="10dp"
-            android:textColor="@color/title" />
-
-        <TextView android:id="@+id/video_published_date_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:paddingLeft="5dp"
+            android:layout_marginRight="10dp"
             android:textColor="@color/title"
-            android:text="@string/video_published_date_text" />
 
-        <!--<ImageView-->
-            <!--android:background="@drawable/published_at"-->
-            <!--android:paddingLeft="10dp"-->
-            <!--android:layout_width="15sp"-->
-            <!--android:layout_height="15sp" />-->
+            />
+
     </LinearLayout>
-
-
-    <!--<LinearLayout-->
-        <!--android:id="@+id/views_layout"-->
-        <!--android:layout_marginTop="1dp"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_below="@id/video_title_playeractivity"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal">-->
-
-        <!--<TextView android:id="@+id/video_views_playeractivity1"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textSize="25sp"-->
-            <!--android:layout_marginRight="10dp"-->
-            <!--android:textColor="@color/title"-->
-            <!--android:text="ndncfnvndfj"-->
-            <!--/>-->
-
-
-    <!--</LinearLayout>-->
-
-    <!--<LinearLayout-->
-        <!--android:id="@+id/time_layout"-->
-        <!--android:layout_below="@id/views_layout"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_marginTop="8dp">-->
-
-        <!--<TextView android:id="@+id/video_published_date_playeractivity"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textSize="10sp"-->
-            <!--android:layout_marginRight="10dp"-->
-            <!--android:textColor="@color/title"-->
-
-            <!--/>-->
-
-    <!--</LinearLayout>-->
 
 
     <LinearLayout

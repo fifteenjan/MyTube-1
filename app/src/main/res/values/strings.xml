@@ -42,11 +42,9 @@
 
     <string name="failed">Failed to initialize Youtube Player</string>
 
-    <string name="Views"> views </string>
+    <string name="Views"> VIEWS </string>
 
     <string name="Published_On"> DATE </string>
-
-    <string name="video_published_date_text">Published date</string>
 
 
 
