@@ -27,14 +27,6 @@ public class PlayerActivity extends YouTubeBaseActivity implements YouTubePlayer
         playerView = (YouTubePlayerView)findViewById(R.id.player_view);
         playerView.initialize(Config.getKEY(), this);
 
-       /*  fav = (Button)findViewById(R.id.favourite);
-            fav.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    addToFavourite();
-                }
-            });
-*/
         TextView title = (TextView) findViewById(R.id.video_title_playeractivity);
         TextView views = (TextView) findViewById(R.id.video_views_playeractivity1);
         TextView publishedDate = (TextView) findViewById(R.id.video_published_date_playeractivity);
@@ -43,9 +35,7 @@ public class PlayerActivity extends YouTubeBaseActivity implements YouTubePlayer
         title.setText(getIntent().getStringExtra("title"));
         views.setText(getIntent().getStringExtra("views"));
         publishedDate.setText(getIntent().getStringExtra("date"));
-        description.setText(getIntent().getStringExtra("description"));
-
-
+        //description.setText(getIntent().getStringExtra("description"));
     }
 
     @Override

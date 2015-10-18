@@ -29,6 +29,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
+import com.google.api.services.youtube.YouTubeScopes;
 
 import java.io.IOException;
 
@@ -108,6 +109,7 @@ public class login extends Activity implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
+                .addScope(new Scope(YouTubeScopes.YOUTUBE))
                 .addScope(new Scope(Scopes.PROFILE))
                 .addScope(new Scope(Scopes.EMAIL))
                 .build();
@@ -438,7 +440,8 @@ public class login extends Activity implements
         @Override
         protected String doInBackground(String... params) {
             String accountName = params[0];
-            String scopes = "oauth2:profile email";
+            //String scopes = "oauth2:profile email";
+            String scopes = "oauth2:https://www.googleapis.com/auth/youtube " + "https://www.googleapis.com/auth/userinfo.profile";
             String token = null;
             try {
                 token = GoogleAuthUtil.getToken(getApplicationContext(), accountName, scopes);
@@ -458,6 +461,7 @@ public class login extends Activity implements
             Log.d("Token Value", "Token is: " + s);
             access_token = s;
 
+           Config.setTokenId(access_token);
 
         }
     }

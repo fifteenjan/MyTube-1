@@ -13,6 +13,15 @@ public class VideoItem {
     private String id;
     private BigInteger viewCount;
     private String publishesAt;
+    private boolean favFlag;
+
+    public boolean isFavFlag() {
+        return favFlag;
+    }
+
+    public void setFavFlag(boolean favFlag) {
+        this.favFlag = favFlag;
+    }
 
     public String getId() {
         return id;

@@ -1,7 +1,7 @@
 package com.example.rsanghvi.mytubelab;
 
 /**
- * Created by kasatswati on 10/14/15.
+ * Created by Rishabh Sanghvi on 10/14/15.
  */
 
 import android.content.Intent;
@@ -11,12 +11,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.api.services.youtube.model.Playlist;
+import com.google.api.services.youtube.model.PlaylistListResponse;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -26,6 +28,7 @@ public class TabFragment1 extends Fragment {
     private Handler handler;
     private ListView videosFound;
     String keyword;
+    boolean flag = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -33,65 +36,25 @@ public class TabFragment1 extends Fragment {
         //super.onCreateView(savedInstanceState);
         View view = inflater.inflate(R.layout.tab_fragment_1, container, false);
 
-        videosFound=(ListView)view.findViewById(R.id.videos_found_fragment);
-
-        //videosFound = (ListView)getView().findViewById(R.id.videos_found_fragment);
-
-
-
-
-
-        handler = new Handler() {
-        };
-
+        videosFound = (ListView) view.findViewById(R.id.videos_found_fragment);
+        handler = new Handler();
         keyword = getActivity().getIntent().getExtras().getString("keyword");
-
-        if(keyword == null)
+        if (keyword == null)
             searchOnYoutube("Trending Now");
         else
             searchOnYoutube(keyword);
 
-        addClickListener();
-
         return view;
     }
 
-    private void addClickListener() {
-        videosFound.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    private void searchOnYoutube(final String keywords) {
 
-            @Override
-            public void onItemClick(AdapterView<?> av, View v, int pos,
-                                    long id) {
-                Intent intent = new Intent(getActivity().getApplicationContext(), PlayerActivity.class);
-                intent.putExtra("VIDEO_ID", searchResults.get(pos).getId());
-
-                intent.putExtra("title", searchResults.get(pos).getTitle());
-
-                intent.putExtra("description", searchResults.get(pos).getDescription());
-
-                intent.putExtra("views", searchResults.get(pos).getViewCount().toString());
-
-                intent.putExtra("date", searchResults.get(pos).getPublishedAt());
-
-                startActivity(intent);
-            }
-
-        });
-    }
-
-
-    private void searchOnYoutube(final String keywords){
-
-        new Thread(){
-            public void run(){
-                YoutubeConnector yc = new YoutubeConnector(TabFragment1.super.getActivity());
-
-                searchResults = yc.search(keywords);
-
-                //  searchResults = yc.playlist(keywords);
-
-                handler.post(new Runnable(){
-                    public void run(){
+        new Thread() {
+            public void run() {
+                PlayListOperations playListOperations = new PlayListOperations();
+                searchResults = playListOperations.searchByKeyword(keywords);
+                handler.post(new Runnable() {
+                    public void run() {
                         updateVideosFound();
                     }
                 });
@@ -99,18 +62,19 @@ public class TabFragment1 extends Fragment {
         }.start();
     }
 
-    private void updateVideosFound(){
-        ArrayAdapter<VideoItem> adapter = new ArrayAdapter<VideoItem>(getActivity().getApplicationContext(), R.layout.video_item, searchResults){
+    private void updateVideosFound() {
+        ArrayAdapter<VideoItem> adapter = new ArrayAdapter<VideoItem>(getActivity().getApplicationContext(), R.layout.video_item, searchResults) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-                if(convertView == null){
+                if (convertView == null) {
                     convertView = getActivity().getLayoutInflater().inflate(R.layout.video_item, parent, false);
                 }
-                ImageView thumbnail = (ImageView)convertView.findViewById(R.id.video_thumbnail);
-                TextView title = (TextView)convertView.findViewById(R.id.video_title);
-                TextView views = (TextView)convertView.findViewById(R.id.video_views);
-                TextView publishedDate = (TextView)convertView.findViewById(R.id.video_published_date);
-                TextView description = (TextView)convertView.findViewById(R.id.description);
+                ImageView thumbnail = (ImageView) convertView.findViewById(R.id.video_thumbnail);
+                TextView title = (TextView) convertView.findViewById(R.id.video_title);
+                TextView views = (TextView) convertView.findViewById(R.id.video_views);
+                TextView publishedDate = (TextView) convertView.findViewById(R.id.video_published_date);
+                final ImageButton favbutton = (ImageButton) convertView.findViewById(R.id.favouriteCheckBoxOn);
+                //    TextView description = (TextView)convertView.findViewById(R.id.description);
 
 
                 VideoItem searchResult = searchResults.get(position);
@@ -119,13 +83,43 @@ public class TabFragment1 extends Fragment {
                 title.setText(searchResult.getTitle());
                 views.setText(searchResult.getViewCount().toString());
                 publishedDate.setText(searchResult.getPublishedAt());
-                description.setText(searchResult.getDescription());
+                //  description.setText(searchResult.getDescription());
+
+                final int pos = position;
+
+                thumbnail.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity().getApplicationContext(), PlayerActivity.class);
+                        intent.putExtra("VIDEO_ID", searchResults.get(pos).getId());
+                        intent.putExtra("title", searchResults.get(pos).getTitle());
+                        // intent.putExtra("description", searchResults.get(pos).getDescription());
+                        intent.putExtra("views", searchResults.get(pos).getViewCount().toString());
+                        intent.putExtra("date", searchResults.get(pos).getPublishedAt());
+                        startActivity(intent);
+                    }
+                });
+
+                favbutton.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        if (searchResults.get(pos).isFavFlag() == false) {
+                            PlayListOperations playListOperations = new PlayListOperations();
+                            PlaylistListResponse playlistListResponse = playListOperations.getUserPlaylists();
+                            Playlist playlist = playListOperations.getPlayList(Constants.TITLE, playlistListResponse);
+                            playListOperations.insertItemInPlaylist(playlist, "My new Item", searchResults.get(pos).getId().toString());
+                            favbutton.setBackgroundResource(R.drawable.favfilled);
+                            flag = true;
+                        } else {
+                            favbutton.setBackgroundResource(R.drawable.bookmark);
+                            searchResults.get(pos).setFavFlag(true);
+                        }
+                    }
+                });
                 return convertView;
             }
         };
-
         videosFound.setAdapter(adapter);
     }
-
-
 }
